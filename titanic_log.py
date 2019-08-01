@@ -58,3 +58,44 @@ is categorical
 sns.set(style="darkgrid")
 sns.countplot(x='Survived', hue='Sex', data=titanic_train)
 sns.countplot(x='Survived', hue='Pclass', data=titanic_train)
+
+# It looks like maximum deaths were in the 3rd class. But what was the ratio of survived vs deaths in each class
+# For that we will calculate the mean of the value and store it in seperate variable
+
+Pclass_mean = titanic_train[["Survived", "Pclass"]].groupby(["Pclass"], as_index=False).mean()
+print(Pclass_mean)
+sns.barplot(x = "Pclass", y = "Survived", data = Pclass_mean)
+sns.countplot(x='Survived', hue='Embarked', data=titanic_train)
+
+#simiar analysis for Embarked
+
+Embarked_mean = titanic_train[["Survived", "Embarked"]].groupby(["Embarked"], as_index=False).mean()
+print(Embarked_mean)
+sns.barplot(x = "Embarked", y = "Survived", data = Embarked_mean)
+sns.countplot(x='Embarked', hue='Pclass', data=titanic_train)
+
+# lOoking at gender and chance of survival
+
+Sex_mean = titanic_train[["Survived", "Sex"]].groupby(["Sex"], as_index=False).mean()
+print(Sex_mean)
+sns.barplot(x = "Sex", y = "Survived", data = Sex_mean)
+
+# This clearly shows the female passengers have a higher survival rate
+
+titanic_train.SibSp.describe()
+titanic_train.SibSp.head(10)
+
+titanic_train.Parch.describe()
+titanic_train.Parch.head(10)
+
+# Since SibSp and Parch both variables provide a count of number of family members
+# We can combine to create a familyCount variable
+
+titanic_train['FamilyCount'] = titanic_train['SibSp'] + titanic_train['Parch']
+titanic_test['FamilyCount'] = titanic_test['SibSp'] + titanic_test['Parch']
+
+titanic_train.FamilyCount.head(10)
+FamilyCount_mean = titanic_train[["Survived", "FamilyCount"]].groupby(["FamilyCount"], as_index=False).mean()
+print(FamilyCount_mean)
+sns.barplot(x = "FamilyCount", y = "Survived", data = FamilyCount_mean)
+
