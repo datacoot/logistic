@@ -45,3 +45,16 @@ titanic_train.head(5)
 titanic_train.count()
 
 #Cabin (204), age (714), and embarked (889) have missing data
+
+# Plotting the correlation matrix to identify the inbuilt relationships between variables
+
+plt.matshow(titanic_train.corr())
+plt.show()
+
+"""The correlation matrix doesn't perform well here as some of the explanatory variables are categorical
+Instead our aim should be to understand the data from the categorical perspective as the response variable 
+is categorical
+"""
+sns.set(style="darkgrid")
+sns.countplot(x='Survived', hue='Sex', data=titanic_train)
+sns.countplot(x='Survived', hue='Pclass', data=titanic_train)
