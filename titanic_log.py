@@ -178,3 +178,22 @@ titanic_test1.info()
 titanic_test1.head(15)
 
 # Our data is ready for model building 
+
+#Starting with Logistic Regression
+
+x_train = titanic_train1.drop('Survived', axis =1)
+y_train = titanic_train1["Survived"]
+x_test = titanic_test1
+
+model = LogisticRegression()
+model.fit(x_train, y_train)
+
+# Now to measure the accuracy of the algorithm
+
+model.score (x_train, y_train)
+
+# Using the model to predict
+y_pred = model.predict(x_test)
+
+print(y_pred)
+
