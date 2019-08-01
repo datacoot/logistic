@@ -65,6 +65,7 @@ sns.countplot(x='Survived', hue='Pclass', data=titanic_train)
 Pclass_mean = titanic_train[["Survived", "Pclass"]].groupby(["Pclass"], as_index=False).mean()
 print(Pclass_mean)
 sns.barplot(x = "Pclass", y = "Survived", data = Pclass_mean)
+
 sns.countplot(x='Survived', hue='Embarked', data=titanic_train)
 
 #simiar analysis for Embarked
@@ -99,3 +100,81 @@ FamilyCount_mean = titanic_train[["Survived", "FamilyCount"]].groupby(["FamilyCo
 print(FamilyCount_mean)
 sns.barplot(x = "FamilyCount", y = "Survived", data = FamilyCount_mean)
 
+# Dropping SibSp, Parch, Name, PassengerId, Fare, and Ticket from the data
+# Fare and Ticket price would indicate the same thing as Pclass and therefore may introduce multicolinearity
+
+titanic_train.Pclass.head()
+
+titanic_train = titanic_train.drop(['SibSp','Parch', 'PassengerId', 'Name', 'Fare', 'Ticket'], axis=1)
+titanic_test = titanic_test.drop(['SibSp','Parch', 'PassengerId', 'Name', 'Fare', 'Ticket'], axis=1)
+
+sns.countplot(x='Embarked', data=titanic_train)
+titanic_train["Embarked"] = titanic_train["Embarked"].fillna("S")
+
+# Completing the null values in the age coloumn based on mean ages of Pclass
+
+age_mean = titanic_train.groupby(['Pclass'])['Age'].mean()
+print(age_mean)
+
+# Adding the mean age by Pclass for each null value in the Age column
+
+def impute_age(cols):
+    Age = cols[0]
+    Pclass = cols[1]
+    
+    if pd.isnull(Age):
+
+        if Pclass == 1:
+            return 38
+
+        elif Pclass == 2:
+            return 29
+
+        else:
+            return 25
+
+    else:
+        return Age
+
+titanic_train['Age'] = titanic_train[['Age','Pclass']].apply(impute_age,axis=1)
+titanic_test['Age'] = titanic_test[['Age','Pclass']].apply(impute_age,axis=1)
+
+titanic_train = titanic_train.drop(['Cabin'], axis=1)
+titanic_test = titanic_test.drop(['Cabin'], axis=1)
+
+titanic_train.info()
+titanic_test.info()
+
+# Hot encoding categorical variables
+
+Pasclass = {1:'Class1', 2:'Class2', 3:'Class3'}
+titanic_train.Pclass = [Pasclass[item] for item in titanic_train.Pclass]
+titanic_test.Pclass = [Pasclass[item] for item in titanic_test.Pclass]
+
+titanic_train.info()
+titanic_train.head(15)
+
+titanic_test.info()
+titanic_test.head(15)
+
+dSex = pd.get_dummies(titanic_train['Sex'])
+dEmbarked = pd.get_dummies(titanic_train['Embarked'])
+dPclass = pd.get_dummies(titanic_train['Pclass'])
+
+titanic_train1 = titanic_train.drop(['Sex', 'Embarked', 'Pclass'], axis = 1)
+titanic_train1 = pd.concat([titanic_train1, dSex, dEmbarked, dPclass], axis=1)
+
+titanic_train1.info()
+titanic_train1.head(15)
+
+dtSex = pd.get_dummies(titanic_test['Sex'])
+dtEmbarked = pd.get_dummies(titanic_test['Embarked'])
+dtPclass = pd.get_dummies(titanic_test['Pclass'])
+
+titanic_test1 = titanic_test.drop(['Sex', 'Embarked', 'Pclass'], axis = 1)
+titanic_test1 = pd.concat([titanic_test1, dtSex, dtEmbarked, dtPclass], axis=1)
+
+titanic_test1.info()
+titanic_test1.head(15)
+
+# Our data is ready for model building 
